@@ -16,8 +16,11 @@
 
 package io.renren.modules.sys.dao;
 
-import com.baomidou.mybatisplus.mapper.BaseMapper;
+import io.renren.modules.sys.entity.SysUserEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 import io.renren.modules.sys.entity.SysUserRoleEntity;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -28,15 +31,16 @@ import java.util.List;
  * @email sunlightcs@gmail.com
  * @date 2016年9月18日 上午9:34:46
  */
-public interface SysUserRoleDao extends BaseMapper<SysUserRoleEntity> {
+@Repository
+public interface SysUserRoleDao extends JpaRepository<SysUserRoleEntity, Long>, JpaSpecificationExecutor<SysUserRoleEntity> {
 	
 	/**
 	 * 根据用户ID，获取角色ID列表
 	 */
-	List<Long> queryRoleIdList(Long userId);
+	List<Long> findAllByUserId(Long userId);
 
 	/**
 	 * 根据角色ID数组，批量删除
 	 */
-	int deleteBatch(Long[] roleIds);
+	int deleteAllByRoleIdIn(Long[] roleIds);
 }

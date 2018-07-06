@@ -27,12 +27,14 @@ import org.apache.commons.lang.StringUtils;
  */
 public abstract class Assert {
 
+    // TODO is not blank
     public static void isBlank(String str, String message) {
         if (StringUtils.isBlank(str)) {
             throw new RRException(message);
         }
     }
 
+    // TODO is not null
     public static void isNull(Object object, String message) {
         if (object == null) {
             throw new RRException(message);

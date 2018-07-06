@@ -16,7 +16,7 @@
 
 package io.renren.service;
 
-import com.baomidou.mybatisplus.service.IService;
+import io.renren.common.base.IService;
 import io.renren.entity.TokenEntity;
 
 /**
@@ -26,7 +26,7 @@ import io.renren.entity.TokenEntity;
  * @email sunlightcs@gmail.com
  * @date 2017-03-23 15:22:07
  */
-public interface TokenService extends IService<TokenEntity> {
+public interface TokenService extends IService<TokenEntity, Long> {
 
 	TokenEntity queryByToken(String token);
 

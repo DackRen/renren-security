@@ -99,7 +99,7 @@ public class SysUserController extends AbstractController {
 	@RequestMapping("/info/{userId}")
 	@RequiresPermissions("sys:user:info")
 	public R info(@PathVariable("userId") Long userId){
-		SysUserEntity user = sysUserService.selectById(userId);
+		SysUserEntity user = sysUserService.findById(userId);
 		
 		//获取用户所属的角色列表
 		List<Long> roleIdList = sysUserRoleService.queryRoleIdList(userId);
@@ -141,7 +141,7 @@ public class SysUserController extends AbstractController {
 	 */
 	@SysLog("删除用户")
 	@RequestMapping("/delete")
-	@RequiresPermissions("sys:user:delete")
+	@RequiresPermissions("sys:user:deleteById")
 	public R delete(@RequestBody Long[] userIds){
 		if(ArrayUtils.contains(userIds, 1L)){
 			return R.error("系统管理员不能删除");
@@ -150,8 +150,9 @@ public class SysUserController extends AbstractController {
 		if(ArrayUtils.contains(userIds, getUserId())){
 			return R.error("当前用户不能删除");
 		}
+		Arrays.stream(userIds).forEach(id -> sysUserService.delete(id));
 
-		sysUserService.deleteBatchIds(Arrays.asList(userIds));
+//		sysUserService.deleteBatchIds(Arrays.asList(userIds));
 		
 		return R.ok();
 	}

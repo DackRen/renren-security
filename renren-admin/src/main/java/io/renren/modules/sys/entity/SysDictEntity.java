@@ -16,10 +16,13 @@
 
 package io.renren.modules.sys.entity;
 
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableLogic;
-import com.baomidou.mybatisplus.annotations.TableName;
+import io.renren.common.base.AbstractEntity;
+import lombok.Data;
+import org.hibernate.annotations.Loader;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
@@ -29,11 +32,23 @@ import java.io.Serializable;
  * @author Mark sunlightcs@gmail.com
  * @since 3.1.0 2018-01-27
  */
-@TableName("sys_dict")
-public class SysDictEntity implements Serializable {
+@Table(name = "sys_dict")
+//@SQLDelete(sql =
+//		"UPDATE sys_dict SET delFlag = -1 WHERE id = ?")
+//@Loader(namedQuery = "findSysDictById")
+//@NamedQuery(name = "findSysDictById", query = "SELECT t " +
+//				"FROM SysDictEntity t " +
+//				"WHERE " +
+//				"   t.id = ?1 AND " +
+//				"   t.delFlag = 0")
+//@Where(clause = "delFlag = 0")
+@Data
+@Entity
+public class SysDictEntity extends AbstractEntity {
 	private static final long serialVersionUID = 1L;
 
-	@TableId
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long id;
 	/**
 	 * 字典名称
@@ -66,103 +81,5 @@ public class SysDictEntity implements Serializable {
 	/**
 	 * 删除标记  -1：已删除  0：正常
 	 */
-	@TableLogic
 	private Integer delFlag;
-
-	/**
-	 * 设置：
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-	/**
-	 * 获取：
-	 */
-	public Long getId() {
-		return id;
-	}
-	/**
-	 * 设置：字典名称
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-	/**
-	 * 获取：字典名称
-	 */
-	public String getName() {
-		return name;
-	}
-	/**
-	 * 设置：字典类型
-	 */
-	public void setType(String type) {
-		this.type = type;
-	}
-	/**
-	 * 获取：字典类型
-	 */
-	public String getType() {
-		return type;
-	}
-	/**
-	 * 设置：字典码
-	 */
-	public void setCode(String code) {
-		this.code = code;
-	}
-	/**
-	 * 获取：字典码
-	 */
-	public String getCode() {
-		return code;
-	}
-	/**
-	 * 设置：字典值
-	 */
-	public void setValue(String value) {
-		this.value = value;
-	}
-	/**
-	 * 获取：字典值
-	 */
-	public String getValue() {
-		return value;
-	}
-	/**
-	 * 设置：排序
-	 */
-	public void setOrderNum(Integer orderNum) {
-		this.orderNum = orderNum;
-	}
-	/**
-	 * 获取：排序
-	 */
-	public Integer getOrderNum() {
-		return orderNum;
-	}
-	/**
-	 * 设置：备注
-	 */
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
-	/**
-	 * 获取：备注
-	 */
-	public String getRemark() {
-		return remark;
-	}
-	/**
-	 * 设置：删除标记  -1：已删除  0：正常
-	 */
-	public void setDelFlag(Integer delFlag) {
-		this.delFlag = delFlag;
-	}
-	/**
-	 * 获取：删除标记  -1：已删除  0：正常
-	 */
-	public Integer getDelFlag() {
-		return delFlag;
-	}
 }

@@ -16,8 +16,9 @@
 
 package io.renren.modules.sys.dao;
 
-import com.baomidou.mybatisplus.mapper.BaseMapper;
+import org.springframework.data.jpa.repository.JpaRepository;
 import io.renren.modules.sys.entity.SysDeptEntity;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -28,12 +29,13 @@ import java.util.List;
  * @email sunlightcs@gmail.com
  * @date 2017-06-20 15:23:47
  */
-public interface SysDeptDao extends BaseMapper<SysDeptEntity> {
+@Repository
+public interface SysDeptDao extends JpaRepository<SysDeptEntity, Long> {
 
     /**
      * 查询子部门ID列表
      * @param parentId  上级部门ID
      */
-    List<Long> queryDetpIdList(Long parentId);
+    List<Long> findAllByParentId(Long parentId);
 
 }

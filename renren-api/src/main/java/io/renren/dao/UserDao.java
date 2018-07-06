@@ -16,8 +16,9 @@
 
 package io.renren.dao;
 
-import com.baomidou.mybatisplus.mapper.BaseMapper;
 import io.renren.entity.UserEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  * 用户
@@ -26,6 +27,7 @@ import io.renren.entity.UserEntity;
  * @email sunlightcs@gmail.com
  * @date 2017-03-23 15:22:06
  */
-public interface UserDao extends BaseMapper<UserEntity> {
+@Repository
+public interface UserDao extends JpaRepository<UserEntity, Long> {
 
 }

@@ -17,7 +17,7 @@
 package io.renren.modules.sys.service;
 
 
-import com.baomidou.mybatisplus.service.IService;
+import io.renren.common.base.IService;
 import io.renren.modules.sys.entity.SysMenuEntity;
 
 import java.util.List;
@@ -30,7 +30,7 @@ import java.util.List;
  * @email sunlightcs@gmail.com
  * @date 2016年9月18日 上午9:42:16
  */
-public interface SysMenuService extends IService<SysMenuEntity> {
+public interface SysMenuService extends IService<SysMenuEntity, Long> {
 
 	/**
 	 * 根据父菜单，查询子菜单
@@ -55,8 +55,8 @@ public interface SysMenuService extends IService<SysMenuEntity> {
 	 */
 	List<SysMenuEntity> getUserMenuList(Long userId);
 
-	/**
-	 * 删除
-	 */
-	void delete(Long menuId);
+//	/**
+//	 * 删除
+//	 */
+//	void deleteById(Long menuId);
 }

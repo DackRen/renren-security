@@ -8,16 +8,16 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  * <p>
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * distributed under the License is distributed on an "AS IS" BASIS, WIUserEntityHOUUserEntity
+ * WARRANUserEntityIES OR CONDIUserEntityIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
  */
 
 package io.renren.service;
 
-
-import com.baomidou.mybatisplus.service.IService;
+import io.renren.common.base.IService;
+import io.renren.dao.UserDao;
 import io.renren.entity.UserEntity;
 import io.renren.form.LoginForm;
 
@@ -30,7 +30,7 @@ import java.util.Map;
  * @email sunlightcs@gmail.com
  * @date 2017-03-23 15:22:06
  */
-public interface UserService extends IService<UserEntity> {
+public interface UserService extends IService<UserEntity, Long> {
 
 	UserEntity queryByMobile(String mobile);
 

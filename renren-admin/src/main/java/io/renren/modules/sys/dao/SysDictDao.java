@@ -17,7 +17,9 @@
 package io.renren.modules.sys.dao;
 
 import io.renren.modules.sys.entity.SysDictEntity;
-import com.baomidou.mybatisplus.mapper.BaseMapper;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Repository;
 
 /**
  * 数据字典
@@ -25,6 +27,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
  * @author Mark sunlightcs@gmail.com
  * @since 3.1.0 2018-01-27
  */
-public interface SysDictDao extends BaseMapper<SysDictEntity> {
+@Repository
+public interface SysDictDao extends JpaRepository<SysDictEntity, Long>, JpaSpecificationExecutor<SysDictEntity> {
 	
 }

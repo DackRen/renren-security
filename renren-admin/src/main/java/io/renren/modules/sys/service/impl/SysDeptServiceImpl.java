@@ -16,13 +16,11 @@
 
 package io.renren.modules.sys.service.impl;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import io.renren.common.annotation.DataFilter;
-import io.renren.common.utils.Constant;
+import io.renren.common.base.ServiceImpl;import io.renren.common.annotation.DataFilter;
 import io.renren.modules.sys.dao.SysDeptDao;
 import io.renren.modules.sys.entity.SysDeptEntity;
 import io.renren.modules.sys.service.SysDeptService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,27 +29,31 @@ import java.util.Map;
 
 
 @Service("sysDeptService")
-public class SysDeptServiceImpl extends ServiceImpl<SysDeptDao, SysDeptEntity> implements SysDeptService {
-	
+public class SysDeptServiceImpl extends ServiceImpl<SysDeptEntity, Long> implements SysDeptService {
+	private final SysDeptDao repository;
+	@Autowired
+	public SysDeptServiceImpl(final SysDeptDao repository) {
+		super(repository);
+		this.repository = repository;
+	}
 	@Override
 	@DataFilter(subDept = true, user = false)
 	public List<SysDeptEntity> queryList(Map<String, Object> params){
 		List<SysDeptEntity> deptList =
-			this.selectList(new EntityWrapper<SysDeptEntity>()
-			.addFilterIfNeed(params.get(Constant.SQL_FILTER) != null, (String)params.get(Constant.SQL_FILTER)));
+			repository.findAll();
+//			.addFilterIfNeed(params.get(Constant.SQL_FILTER) != null, (String)params.get(Constant.SQL_FILTER)));
 
 		for(SysDeptEntity sysDeptEntity : deptList){
-			SysDeptEntity parentDeptEntity =  this.selectById(sysDeptEntity.getParentId());
-			if(parentDeptEntity != null){
-				sysDeptEntity.setParentName(parentDeptEntity.getName());
-			}
+			repository
+					.findById(sysDeptEntity.getParentId())
+					.ifPresent(parentDeptEntity -> sysDeptEntity.setParentName(parentDeptEntity.getName()));
 		}
 		return deptList;
 	}
 
 	@Override
 	public List<Long> queryDetpIdList(Long parentId) {
-		return baseMapper.queryDetpIdList(parentId);
+		return repository.findAllByParentId(parentId);
 	}
 
 	@Override

@@ -17,14 +17,19 @@
 package io.renren.modules.sys.service.impl;
 
 
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import io.renren.common.base.ServiceImpl;
+import io.renren.common.specification.RSQLSpecification;
 import io.renren.common.utils.MapUtils;
 import io.renren.modules.sys.dao.SysUserRoleDao;
 import io.renren.modules.sys.entity.SysUserRoleEntity;
 import io.renren.modules.sys.service.SysUserRoleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -36,11 +41,21 @@ import java.util.List;
  * @date 2016年9月18日 上午9:45:48
  */
 @Service("sysUserRoleService")
-public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleDao, SysUserRoleEntity> implements SysUserRoleService {
+public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleEntity, Long> implements SysUserRoleService {
+	private final SysUserRoleDao repository;
+
+	@Autowired
+	public SysUserRoleServiceImpl(SysUserRoleDao repository) {
+		super(repository);
+		this.repository = repository;
+	}
+
 	@Override
 	public void saveOrUpdate(Long userId, List<Long> roleIdList) {
 		//先删除用户与角色关系
-		this.deleteByMap(new MapUtils().put("user_id", userId));
+		repository
+				.findOne(Example.of(SysUserRoleEntity.builder().userId(userId).build()))
+				.ifPresent(sysUserRoleEntity -> repository.delete(sysUserRoleEntity));
 
 		if(roleIdList == null || roleIdList.size() == 0){
 			return ;
@@ -55,16 +70,18 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleDao, SysUserR
 
 			list.add(sysUserRoleEntity);
 		}
-		this.insertBatch(list);
+		repository.saveAll(list);
 	}
 
 	@Override
 	public List<Long> queryRoleIdList(Long userId) {
-		return baseMapper.queryRoleIdList(userId);
+		return repository.findAllByUserId(userId);
 	}
 
 	@Override
 	public int deleteBatch(Long[] roleIds){
-		return baseMapper.deleteBatch(roleIds);
+//		List<SysUserRoleEntity> sysUserRoleEntities = repository.findAll(new RSQLSpecification<>("roleId", "in", roleIds));
+		return repository.deleteAllByRoleIdIn(roleIds);
+//		return sysUserRoleEntities.size();
 	}
 }

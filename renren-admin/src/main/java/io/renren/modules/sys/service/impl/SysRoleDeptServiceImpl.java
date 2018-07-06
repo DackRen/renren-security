@@ -16,15 +16,16 @@
 
 package io.renren.modules.sys.service.impl;
 
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import io.renren.modules.sys.dao.SysRoleDeptDao;
+import io.renren.common.base.ServiceImpl;import io.renren.modules.sys.dao.SysRoleDeptDao;
 import io.renren.modules.sys.entity.SysRoleDeptEntity;
 import io.renren.modules.sys.service.SysRoleDeptService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -35,7 +36,13 @@ import java.util.List;
  * @date 2017年6月21日 23:42:30
  */
 @Service("sysRoleDeptService")
-public class SysRoleDeptServiceImpl extends ServiceImpl<SysRoleDeptDao, SysRoleDeptEntity> implements SysRoleDeptService {
+public class SysRoleDeptServiceImpl extends ServiceImpl<SysRoleDeptEntity, Long> implements SysRoleDeptService {
+	private final SysRoleDeptDao repository;
+	@Autowired
+	public SysRoleDeptServiceImpl(SysRoleDeptDao repository) {
+		super(repository);
+		this.repository = repository;
+	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
@@ -56,16 +63,16 @@ public class SysRoleDeptServiceImpl extends ServiceImpl<SysRoleDeptDao, SysRoleD
 
 			list.add(sysRoleDeptEntity);
 		}
-		this.insertBatch(list);
+		repository.saveAll(list);
 	}
 
 	@Override
 	public List<Long> queryDeptIdList(Long[] roleIds) {
-		return baseMapper.queryDeptIdList(roleIds);
+		return repository.findAllByRoleIdIn(roleIds).stream().map(SysRoleDeptEntity::getDeptId).collect(Collectors.toList());
 	}
 
 	@Override
 	public int deleteBatch(Long[] roleIds){
-		return baseMapper.deleteBatch(roleIds);
+		return repository.deleteAllByRoleIdIn(roleIds);
 	}
 }

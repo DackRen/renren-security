@@ -17,8 +17,10 @@
 package io.renren.modules.sys.dao;
 
 
-import com.baomidou.mybatisplus.mapper.BaseMapper;
+import org.springframework.data.jpa.repository.JpaRepository;
 import io.renren.modules.sys.entity.SysLogEntity;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Repository;
 
 /**
  * 系统日志
@@ -27,6 +29,7 @@ import io.renren.modules.sys.entity.SysLogEntity;
  * @email sunlightcs@gmail.com
  * @date 2017-03-08 10:40:56
  */
-public interface SysLogDao extends BaseMapper<SysLogEntity> {
+@Repository
+public interface SysLogDao extends JpaRepository<SysLogEntity, Long>, JpaSpecificationExecutor<SysLogEntity> {
 	
 }

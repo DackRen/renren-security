@@ -5173,7 +5173,7 @@ function joinUrl(base, rel) {
     // change only fragment part
     result.fragment = relsp.fragment;
   } else if (relsp.path.slice(0, 1) === '/') {
-    // relative to domain
+    // relative to base
     result.path = relsp.path;
     result.fragment = relsp.fragment;
   } else {
@@ -9854,7 +9854,7 @@ module.exports = isArray || function (val) {
             str.push("expires=" + (new Date(this.expiration_date)).toGMTString());
         }
         if (this.domain) {
-            str.push("domain=" + this.domain);
+            str.push("base=" + this.domain);
         }
         if (this.path) {
             str.push("path=" + this.path);
@@ -20855,7 +20855,7 @@ Request.prototype.callback = function(err, res){
 };
 
 /**
- * Invoke callback with x-domain error.
+ * Invoke callback with x-base error.
  *
  * @api private
  */
@@ -21359,7 +21359,7 @@ exports.abort = function(){
 };
 
 /**
- * Enable transmission of cookies with x-domain requests.
+ * Enable transmission of cookies with x-base requests.
  *
  * Note that for this to work the origin must not be
  * using "Access-Control-Allow-Origin" with a wildcard,

@@ -16,16 +16,17 @@
 
 package io.renren.modules.sys.service.impl;
 
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import io.renren.modules.sys.dao.SysRoleMenuDao;
+import io.renren.common.base.ServiceImpl;import io.renren.modules.sys.dao.SysRoleMenuDao;
 import io.renren.modules.sys.entity.SysRoleMenuEntity;
 import io.renren.modules.sys.service.SysRoleMenuService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.stream.Collectors;
 
 
 /**
@@ -36,7 +37,13 @@ import java.util.List;
  * @date 2016年9月18日 上午9:44:35
  */
 @Service("sysRoleMenuService")
-public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuDao, SysRoleMenuEntity> implements SysRoleMenuService {
+public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuEntity, Long> implements SysRoleMenuService {
+	private final SysRoleMenuDao repository;
+	@Autowired
+	public SysRoleMenuServiceImpl(SysRoleMenuDao repository) {
+		super(repository);
+		this.repository = repository;
+	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
@@ -57,17 +64,22 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuDao, SysRoleM
 
 			list.add(sysRoleMenuEntity);
 		}
-		this.insertBatch(list);
+		repository.saveAll(list);
 	}
 
 	@Override
 	public List<Long> queryMenuIdList(Long roleId) {
-		return baseMapper.queryMenuIdList(roleId);
+		return repository.findAll(Example.of(SysRoleMenuEntity.builder().roleId(roleId).build())).stream().map(SysRoleMenuEntity::getMenuId).collect(Collectors.toList());
 	}
 
 	@Override
 	public int deleteBatch(Long[] roleIds){
-		return baseMapper.deleteBatch(roleIds);
+		return repository.deleteAllByRoleIdIn(roleIds);
+	}
+
+	@Override
+	public int deleteByMenuId(Long menuId) {
+		return repository.deleteByMenuId(menuId);
 	}
 
 }

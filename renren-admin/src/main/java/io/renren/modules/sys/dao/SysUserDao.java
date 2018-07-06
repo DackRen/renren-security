@@ -16,8 +16,10 @@
 
 package io.renren.modules.sys.dao;
 
-import com.baomidou.mybatisplus.mapper.BaseMapper;
+import org.springframework.data.jpa.repository.JpaRepository;
 import io.renren.modules.sys.entity.SysUserEntity;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -28,17 +30,7 @@ import java.util.List;
  * @email sunlightcs@gmail.com
  * @date 2016年9月18日 上午9:34:11
  */
-public interface SysUserDao extends BaseMapper<SysUserEntity> {
-	
-	/**
-	 * 查询用户的所有权限
-	 * @param userId  用户ID
-	 */
-	List<String> queryAllPerms(Long userId);
-	
-	/**
-	 * 查询用户的所有菜单ID
-	 */
-	List<Long> queryAllMenuId(Long userId);
+@Repository
+public interface SysUserDao extends JpaRepository<SysUserEntity, Long>, JpaSpecificationExecutor<SysUserEntity> {
 
 }

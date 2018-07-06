@@ -38,6 +38,7 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 
 /**
@@ -66,13 +67,13 @@ public class UserRealm extends AuthorizingRealm {
 		
 		//系统管理员，拥有最高权限
 		if(userId == Constant.SUPER_ADMIN){
-			List<SysMenuEntity> menuList = sysMenuDao.selectList(null);
+			List<SysMenuEntity> menuList = sysMenuDao.findAll();
 			permsList = new ArrayList<>(menuList.size());
 			for(SysMenuEntity menu : menuList){
 				permsList.add(menu.getPerms());
 			}
 		}else{
-			permsList = sysUserDao.queryAllPerms(userId);
+			permsList = new ArrayList<>();//sysUserDao.queryAllPerms(userId);
 		}
 
 		//用户权限列表
@@ -93,19 +94,14 @@ public class UserRealm extends AuthorizingRealm {
 	 * 认证(登录时调用)
 	 */
 	@Override
-	protected AuthenticationInfo doGetAuthenticationInfo(
-			AuthenticationToken authcToken) throws AuthenticationException {
+	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
 		UsernamePasswordToken token = (UsernamePasswordToken)authcToken;
 
 		//查询用户信息
-		SysUserEntity user = new SysUserEntity();
-		user.setUsername(token.getUsername());
-		user = sysUserDao.selectOne(user);
-
-		//账号不存在
-		if(user == null) {
-			throw new UnknownAccountException("账号或密码不正确");
-		}
+		SysUserEntity user = sysUserDao
+				.findOne(Example.of(SysUserEntity.builder().username(token.getUsername()).build()))
+				//账号不存在
+				.orElseThrow(() -> new UnknownAccountException("账号或密码不正确"));
 
 		//账号锁定
 		if(user.getStatus() == 0){

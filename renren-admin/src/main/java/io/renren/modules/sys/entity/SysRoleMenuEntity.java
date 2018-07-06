@@ -16,10 +16,13 @@
 
 package io.renren.modules.sys.entity;
 
+import io.renren.common.base.AbstractEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
-
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -29,10 +32,13 @@ import java.io.Serializable;
  * @email sunlightcs@gmail.com
  * @date 2016年9月18日 上午9:28:13
  */
-@TableName("sys_role_menu")
-public class SysRoleMenuEntity implements Serializable {
+@Entity
+@Table(name = "sys_role_menu")
+@Data@Builder@AllArgsConstructor@NoArgsConstructor
+public class SysRoleMenuEntity extends AbstractEntity {
 	private static final long serialVersionUID = 1L;
-	@TableId
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long id;
 
 	/**
@@ -44,53 +50,4 @@ public class SysRoleMenuEntity implements Serializable {
 	 * 菜单ID
 	 */
 	private Long menuId;
-
-	/**
-	 * 设置：
-	 * @param id 
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * 获取：
-	 * @return Long
-	 */
-	public Long getId() {
-		return id;
-	}
-	
-	/**
-	 * 设置：角色ID
-	 * @param roleId 角色ID
-	 */
-	public void setRoleId(Long roleId) {
-		this.roleId = roleId;
-	}
-
-	/**
-	 * 获取：角色ID
-	 * @return Long
-	 */
-	public Long getRoleId() {
-		return roleId;
-	}
-	
-	/**
-	 * 设置：菜单ID
-	 * @param menuId 菜单ID
-	 */
-	public void setMenuId(Long menuId) {
-		this.menuId = menuId;
-	}
-
-	/**
-	 * 获取：菜单ID
-	 * @return Long
-	 */
-	public Long getMenuId() {
-		return menuId;
-	}
-	
 }

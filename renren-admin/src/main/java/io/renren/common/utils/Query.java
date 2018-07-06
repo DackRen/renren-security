@@ -16,7 +16,7 @@
 
 package io.renren.common.utils;
 
-import com.baomidou.mybatisplus.plugins.Page;
+import org.springframework.data.domain.*;
 import io.renren.common.xss.SQLFilter;
 import org.apache.commons.lang.StringUtils;
 
@@ -34,7 +34,7 @@ public class Query<T> extends LinkedHashMap<String, Object> {
     /**
      * mybatis-plus分页参数
      */
-    private Page<T> page;
+    private Pageable page;
     /**
      * 当前页码
      */
@@ -65,18 +65,20 @@ public class Query<T> extends LinkedHashMap<String, Object> {
         this.put("sidx", sidx);
         this.put("order", order);
 
-        //mybatis-plus分页
-        this.page = new Page<>(currPage, limit);
-
         //排序
+        Sort sort;
         if(StringUtils.isNotBlank(sidx) && StringUtils.isNotBlank(order)){
-            this.page.setOrderByField(sidx);
-            this.page.setAsc("ASC".equalsIgnoreCase(order));
+            sort = Sort.by("ASC".equalsIgnoreCase(order) ? Sort.Direction.ASC : Sort.Direction.DESC, sidx);
+        } else {
+            sort = Sort.unsorted();
         }
+
+        this.page = PageRequest.of(currPage, limit, sort);
+
 
     }
 
-    public Page<T> getPage() {
+    public Pageable getPage() {
         return page;
     }
 

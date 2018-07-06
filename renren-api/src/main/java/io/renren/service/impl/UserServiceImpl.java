@@ -16,11 +16,9 @@
 
 package io.renren.service.impl;
 
-
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import io.renren.common.base.ServiceImpl;
 import io.renren.common.exception.RRException;
 import io.renren.common.validator.Assert;
-import io.renren.dao.UserDao;
 import io.renren.entity.TokenEntity;
 import io.renren.entity.UserEntity;
 import io.renren.form.LoginForm;
@@ -28,21 +26,29 @@ import io.renren.service.TokenService;
 import io.renren.service.UserService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author rjz
+ */
 @Service("userService")
-public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements UserService {
+public class UserServiceImpl extends ServiceImpl<UserEntity, Long> implements UserService {
 	@Autowired
 	private TokenService tokenService;
 
+	@Autowired
+	public UserServiceImpl(JpaRepository<UserEntity, Long> repository) {
+		super(repository);
+	}
+
 	@Override
 	public UserEntity queryByMobile(String mobile) {
-		UserEntity userEntity = new UserEntity();
-		userEntity.setMobile(mobile);
-		return baseMapper.selectOne(userEntity);
+		return repository.findOne(Example.of(UserEntity.builder().mobile(mobile).build())).orElse(null);
 	}
 
 	@Override

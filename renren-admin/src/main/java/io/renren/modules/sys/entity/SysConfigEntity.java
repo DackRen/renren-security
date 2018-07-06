@@ -16,9 +16,10 @@
 
 package io.renren.modules.sys.entity;
 
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
+import io.renren.common.base.AbstractEntity;
+import lombok.Data;
 
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 /**
@@ -28,43 +29,17 @@ import javax.validation.constraints.NotBlank;
  * @email sunlightcs@gmail.com
  * @date 2016年12月4日 下午6:43:36
  */
-@TableName("sys_config")
-public class SysConfigEntity {
-	@TableId
+@Table(name = "sys_config")
+@Data
+@Entity
+public class SysConfigEntity extends AbstractEntity {
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long id;
 	@NotBlank(message="参数名不能为空")
 	private String paramKey;
 	@NotBlank(message="参数值不能为空")
+	@Column(length = 50000)
 	private String paramValue;
 	private String remark;
-
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getParamKey() {
-		return paramKey;
-	}
-
-	public void setParamKey(String paramKey) {
-		this.paramKey = paramKey;
-	}
-
-	public String getParamValue() {
-		return paramValue;
-	}
-
-	public void setParamValue(String paramValue) {
-		this.paramValue = paramValue;
-	}
-
-	public String getRemark() {
-		return remark;
-	}
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
 }

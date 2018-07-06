@@ -17,7 +17,7 @@
 package io.renren.modules.sys.service;
 
 
-import com.baomidou.mybatisplus.service.IService;
+import io.renren.common.base.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.sys.entity.SysRoleEntity;
 
@@ -31,11 +31,11 @@ import java.util.Map;
  * @email sunlightcs@gmail.com
  * @date 2016年9月18日 上午9:42:52
  */
-public interface SysRoleService extends IService<SysRoleEntity> {
+public interface SysRoleService extends IService<SysRoleEntity, Long> {
 
 	PageUtils queryPage(Map<String, Object> params);
 
-	void save(SysRoleEntity role);
+//	void save(SysRoleEntity role);
 
 	void update(SysRoleEntity role);
 	

@@ -16,19 +16,28 @@
 
 package io.renren.service.impl;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import io.renren.dao.TokenDao;
+import io.renren.common.base.ServiceImpl;
 import io.renren.entity.TokenEntity;
 import io.renren.service.TokenService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.UUID;
 
 
+/**
+ * @author rjz
+ */
 @Service("tokenService")
-public class TokenServiceImpl extends ServiceImpl<TokenDao, TokenEntity> implements TokenService {
+public class TokenServiceImpl extends ServiceImpl<TokenEntity, Long> implements TokenService {
+	@Autowired
+	public TokenServiceImpl(final JpaRepository<TokenEntity, Long> repository) {
+		super(repository);
+	}
+
 	/**
 	 * 12小时后过期
 	 */
@@ -36,7 +45,7 @@ public class TokenServiceImpl extends ServiceImpl<TokenDao, TokenEntity> impleme
 
 	@Override
 	public TokenEntity queryByToken(String token) {
-		return this.selectOne(new EntityWrapper<TokenEntity>().eq("token", token));
+		return repository.findOne(Example.of(TokenEntity.builder().token(token).build())).orElse(null);
 	}
 
 	@Override
@@ -55,7 +64,7 @@ public class TokenServiceImpl extends ServiceImpl<TokenDao, TokenEntity> impleme
 		tokenEntity.setToken(token);
 		tokenEntity.setUpdateTime(now);
 		tokenEntity.setExpireTime(expireTime);
-		this.insertOrUpdate(tokenEntity);
+		repository.save(tokenEntity);
 
 		return tokenEntity;
 	}
@@ -68,7 +77,7 @@ public class TokenServiceImpl extends ServiceImpl<TokenDao, TokenEntity> impleme
 		tokenEntity.setUserId(userId);
 		tokenEntity.setUpdateTime(now);
 		tokenEntity.setExpireTime(now);
-		this.insertOrUpdate(tokenEntity);
+		repository.save(tokenEntity);
 	}
 
 	private String generateToken(){

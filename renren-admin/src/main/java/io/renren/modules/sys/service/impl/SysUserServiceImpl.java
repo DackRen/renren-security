@@ -17,10 +17,13 @@
 package io.renren.modules.sys.service.impl;
 
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import io.renren.common.annotation.DataFilter;
+import io.renren.common.exception.RRException;
+import io.renren.common.specification.RSQLBuilder;
+import io.renren.common.specification.RSQLSpecification;
+import io.renren.common.validator.Assert;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;import io.renren.common.base.ServiceImpl;import io.renren.common.annotation.DataFilter;
+import io.renren.common.base.ServiceImpl;
 import io.renren.common.utils.Constant;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.Query;
@@ -34,9 +37,12 @@ import io.renren.modules.sys.shiro.ShiroUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -50,15 +56,27 @@ import java.util.Map;
  * @date 2016年9月18日 上午9:46:09
  */
 @Service("sysUserService")
-public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> implements SysUserService {
-	@Autowired
-	private SysUserRoleService sysUserRoleService;
-	@Autowired
-	private SysDeptService sysDeptService;
+public class SysUserServiceImpl extends ServiceImpl<SysUserEntity, Long> implements SysUserService {
+	private final SysUserRoleService sysUserRoleService;
+	private final SysDeptService sysDeptService;
+	private final SysUserDao repository;
 
+	@Autowired
+	public SysUserServiceImpl(SysUserRoleService sysUserRoleService, SysDeptService sysDeptService, SysUserDao repository) {
+		super(repository);
+		this.sysUserRoleService = sysUserRoleService;
+		this.sysDeptService = sysDeptService;
+		this.repository = repository;
+	}
+
+
+	/**
+	 * 查询用户的所有菜单ID
+	 */
 	@Override
 	public List<Long> queryAllMenuId(Long userId) {
-		return baseMapper.queryAllMenuId(userId);
+//		return repository.queryAllMenuId(userId);
+		return new ArrayList<>();
 	}
 
 	@Override
@@ -66,15 +84,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 	public PageUtils queryPage(Map<String, Object> params) {
 		String username = (String)params.get("username");
 
-		Page<SysUserEntity> page = this.selectPage(
-			new Query<SysUserEntity>(params).getPage(),
-			new EntityWrapper<SysUserEntity>()
-				.like(StringUtils.isNotBlank(username),"username", username)
-				.addFilterIfNeed(params.get(Constant.SQL_FILTER) != null, (String)params.get(Constant.SQL_FILTER))
-		);
+		Page<SysUserEntity> page = repository.findAll(
+				new RSQLSpecification<>("username", "like", username), new Query<SysUserEntity>(params).getPage());
+//			new EntityWrapper<SysUserEntity>()
+//				.like(StringUtils.isNotBlank(username),"username", username)
+//				.addFilterIfNeed(params.get(Constant.SQL_FILTER) != null, (String)params.get(Constant.SQL_FILTER))
 
-		for(SysUserEntity sysUserEntity : page.getRecords()){
-			SysDeptEntity sysDeptEntity = sysDeptService.selectById(sysUserEntity.getDeptId());
+		for(SysUserEntity sysUserEntity : page.getContent()){
+			SysDeptEntity sysDeptEntity = sysDeptService.findById(sysUserEntity.getDeptId());
 			sysUserEntity.setDeptName(sysDeptEntity.getName());
 		}
 
@@ -83,27 +100,31 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public void save(SysUserEntity user) {
+	public SysUserEntity save(SysUserEntity user) {
 		user.setCreateTime(new Date());
 		//sha256加密
 		String salt = RandomStringUtils.randomAlphanumeric(20);
 		user.setSalt(salt);
 		user.setPassword(ShiroUtils.sha256(user.getPassword(), user.getSalt()));
-		this.insert(user);
+		user = super.save(user);
 		
 		//保存用户与角色关系
 		sysUserRoleService.saveOrUpdate(user.getUserId(), user.getRoleIdList());
+		return user;
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public void update(SysUserEntity user) {
+		if (!repository.existsById(user.getUserId())) {
+			throw new RRException("更新失败, 用户未找到");
+		}
 		if(StringUtils.isBlank(user.getPassword())){
 			user.setPassword(null);
 		}else{
 			user.setPassword(ShiroUtils.sha256(user.getPassword(), user.getSalt()));
 		}
-		this.updateById(user);
+		super.save(user);
 		
 		//保存用户与角色关系
 		sysUserRoleService.saveOrUpdate(user.getUserId(), user.getRoleIdList());
@@ -112,10 +133,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 
 	@Override
 	public boolean updatePassword(Long userId, String password, String newPassword) {
-        SysUserEntity userEntity = new SysUserEntity();
+        SysUserEntity userEntity = findById(userId);
+		if (!StringUtils.equals(userEntity.getPassword(), password)) {
+			throw new RRException("密码错误");
+		}
         userEntity.setPassword(newPassword);
-        return this.update(userEntity,
-                new EntityWrapper<SysUserEntity>().eq("user_id", userId).eq("password", password));
+		this.update(userEntity);
+        return true;
     }
 
 }

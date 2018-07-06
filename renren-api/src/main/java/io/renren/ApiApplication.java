@@ -1,14 +1,14 @@
 package io.renren;
 
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 
 @SpringBootApplication
-@MapperScan(basePackages = {"io.renren.dao"})
+@EnableJpaRepositories(basePackages = {"io.renren.dao"})
 public class ApiApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {

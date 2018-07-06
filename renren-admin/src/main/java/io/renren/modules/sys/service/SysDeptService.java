@@ -17,7 +17,7 @@
 package io.renren.modules.sys.service;
 
 
-import com.baomidou.mybatisplus.service.IService;
+import io.renren.common.base.IService;
 import io.renren.modules.sys.entity.SysDeptEntity;
 
 import java.util.List;
@@ -30,7 +30,7 @@ import java.util.Map;
  * @email sunlightcs@gmail.com
  * @date 2017-06-20 15:23:47
  */
-public interface SysDeptService extends IService<SysDeptEntity> {
+public interface SysDeptService extends IService<SysDeptEntity, Long> {
 
 	List<SysDeptEntity> queryList(Map<String, Object> map);
 

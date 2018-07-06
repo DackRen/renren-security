@@ -16,7 +16,7 @@
 
 package io.renren.modules.sys.service;
 
-import com.baomidou.mybatisplus.service.IService;
+import io.renren.common.base.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.sys.entity.SysDictEntity;
 
@@ -28,7 +28,7 @@ import java.util.Map;
  * @author Mark sunlightcs@gmail.com
  * @since 3.1.0 2018-01-27
  */
-public interface SysDictService extends IService<SysDictEntity> {
+public interface SysDictService extends IService<SysDictEntity, Long> {
 
     PageUtils queryPage(Map<String, Object> params);
 }

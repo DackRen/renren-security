@@ -16,7 +16,7 @@
 
 package io.renren.modules.sys.service;
 
-import com.baomidou.mybatisplus.service.IService;
+import io.renren.common.base.IService;
 import io.renren.modules.sys.entity.SysRoleDeptEntity;
 
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.List;
  * @email sunlightcs@gmail.com
  * @date 2017年6月21日 23:42:30
  */
-public interface SysRoleDeptService extends IService<SysRoleDeptEntity> {
+public interface SysRoleDeptService extends IService<SysRoleDeptEntity, Long> {
 	
 	void saveOrUpdate(Long roleId, List<Long> deptIdList);
 	

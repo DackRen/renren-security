@@ -16,8 +16,9 @@
 
 package io.renren.modules.sys.dao;
 
-import com.baomidou.mybatisplus.mapper.BaseMapper;
+import org.springframework.data.jpa.repository.JpaRepository;
 import io.renren.modules.sys.entity.SysRoleMenuEntity;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -28,15 +29,13 @@ import java.util.List;
  * @email sunlightcs@gmail.com
  * @date 2016年9月18日 上午9:33:46
  */
-public interface SysRoleMenuDao extends BaseMapper<SysRoleMenuEntity> {
-	
-	/**
-	 * 根据角色ID，获取菜单ID列表
-	 */
-	List<Long> queryMenuIdList(Long roleId);
+@Repository
+public interface SysRoleMenuDao extends JpaRepository<SysRoleMenuEntity, Long> {
 
 	/**
 	 * 根据角色ID数组，批量删除
 	 */
-	int deleteBatch(Long[] roleIds);
+	int deleteAllByRoleIdIn(Long[] roleIds);
+
+	int deleteByMenuId(Long menuId);
 }

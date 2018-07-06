@@ -16,7 +16,7 @@
 
 package io.renren.modules.sys.service;
 
-import com.baomidou.mybatisplus.service.IService;
+import io.renren.common.base.IService;
 import io.renren.common.utils.PageUtils;
 import io.renren.modules.sys.entity.SysUserEntity;
 
@@ -31,7 +31,7 @@ import java.util.Map;
  * @email sunlightcs@gmail.com
  * @date 2016年9月18日 上午9:43:39
  */
-public interface SysUserService extends IService<SysUserEntity> {
+public interface SysUserService extends IService<SysUserEntity, Long> {
 
 	PageUtils queryPage(Map<String, Object> params);
 	
@@ -39,11 +39,11 @@ public interface SysUserService extends IService<SysUserEntity> {
 	 * 查询用户的所有菜单ID
 	 */
 	List<Long> queryAllMenuId(Long userId);
-	
-	/**
-	 * 保存用户
-	 */
-	void save(SysUserEntity user);
+
+//	/**
+//	 * 保存用户
+//	 */
+//	void save(SysUserEntity user);
 	
 	/**
 	 * 修改用户

@@ -108,7 +108,7 @@ public class SysDeptController extends AbstractController {
 	@RequestMapping("/info/{deptId}")
 	@RequiresPermissions("sys:dept:info")
 	public R info(@PathVariable("deptId") Long deptId){
-		SysDeptEntity dept = sysDeptService.selectById(deptId);
+		SysDeptEntity dept = sysDeptService.findById(deptId);
 		
 		return R.ok().put("dept", dept);
 	}
@@ -119,7 +119,7 @@ public class SysDeptController extends AbstractController {
 	@RequestMapping("/save")
 	@RequiresPermissions("sys:dept:save")
 	public R save(@RequestBody SysDeptEntity dept){
-		sysDeptService.insert(dept);
+		sysDeptService.save(dept);
 		
 		return R.ok();
 	}
@@ -130,7 +130,7 @@ public class SysDeptController extends AbstractController {
 	@RequestMapping("/update")
 	@RequiresPermissions("sys:dept:update")
 	public R update(@RequestBody SysDeptEntity dept){
-		sysDeptService.updateById(dept);
+		sysDeptService.save(dept);
 		
 		return R.ok();
 	}
@@ -139,7 +139,7 @@ public class SysDeptController extends AbstractController {
 	 * 删除
 	 */
 	@RequestMapping("/delete")
-	@RequiresPermissions("sys:dept:delete")
+	@RequiresPermissions("sys:dept:deleteById")
 	public R delete(long deptId){
 		//判断是否有子部门
 		List<Long> deptList = sysDeptService.queryDetpIdList(deptId);

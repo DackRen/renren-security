@@ -16,10 +16,9 @@
 
 package io.renren.modules.sys.service.impl;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import io.renren.common.utils.PageUtils;
+import io.renren.common.specification.RSQLSpecification;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;import io.renren.common.base.ServiceImpl;import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.Query;
 import io.renren.modules.sys.dao.SysDictDao;
 import io.renren.modules.sys.entity.SysDictEntity;
@@ -31,17 +30,20 @@ import java.util.Map;
 
 
 @Service("sysDictService")
-public class SysDictServiceImpl extends ServiceImpl<SysDictDao, SysDictEntity> implements SysDictService {
-
+public class SysDictServiceImpl extends ServiceImpl<SysDictEntity, Long> implements SysDictService {
+    private final SysDictDao repository;
+    @Autowired
+    public SysDictServiceImpl(final SysDictDao repository) {
+        super(repository);
+        this.repository = repository;
+    }
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         String name = (String)params.get("name");
 
-        Page<SysDictEntity> page = this.selectPage(
-                new Query<SysDictEntity>(params).getPage(),
-                new EntityWrapper<SysDictEntity>()
-                    .like(StringUtils.isNotBlank(name),"name", name)
-        );
+        Page<SysDictEntity> page = repository.findAll(
+                new RSQLSpecification<>("name", "like", name),
+                new Query<SysDictEntity>(params).getPage());
 
         return new PageUtils(page);
     }

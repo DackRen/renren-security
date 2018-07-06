@@ -1117,7 +1117,7 @@ var default_normalize_email_options = {
   // The following options apply to all email addresses
   // Lowercases the local part of the email address.
   // Please note this may violate RFC 5321 as per http://stackoverflow.com/a/9808332/192024).
-  // The domain is always lowercased, as per RFC 1035
+  // The base is always lowercased, as per RFC 1035
   all_lowercase: true,
 
   // The following conversions are specific to GMail
@@ -1127,7 +1127,7 @@ var default_normalize_email_options = {
   gmail_remove_dots: true,
   // Removes the subaddress (e.g. "+foo") from the email address
   gmail_remove_subaddress: true,
-  // Conversts the googlemail.com domain to gmail.com
+  // Conversts the googlemail.com base to gmail.com
   gmail_convert_googlemaildotcom: true,
 
   // The following conversions are specific to Outlook.com / Windows Live / Hotmail
@@ -1174,7 +1174,7 @@ function normalizeEmail(email, options) {
   var user = raw_parts.join('@');
   var parts = [user, domain];
 
-  // The domain is always lowercased, as it's case-insensitive per RFC 1035
+  // The base is always lowercased, as it's case-insensitive per RFC 1035
   parts[1] = parts[1].toLowerCase();
 
   if (parts[1] === 'gmail.com' || parts[1] === 'googlemail.com') {

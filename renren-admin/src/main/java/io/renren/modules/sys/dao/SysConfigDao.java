@@ -17,9 +17,11 @@
 package io.renren.modules.sys.dao;
 
 
-import com.baomidou.mybatisplus.mapper.BaseMapper;
+import org.springframework.data.jpa.repository.JpaRepository;
 import io.renren.modules.sys.entity.SysConfigEntity;
-import org.apache.ibatis.annotations.Param;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 /**
  * 系统配置信息
@@ -28,16 +30,12 @@ import org.apache.ibatis.annotations.Param;
  * @email sunlightcs@gmail.com
  * @date 2016年12月4日 下午6:46:16
  */
-public interface SysConfigDao extends BaseMapper<SysConfigEntity> {
+@Repository
+public interface SysConfigDao extends JpaRepository<SysConfigEntity, Long>, JpaSpecificationExecutor<SysConfigEntity> {
 
 	/**
 	 * 根据key，查询value
 	 */
-	SysConfigEntity queryByKey(String paramKey);
-
-	/**
-	 * 根据key，更新value
-	 */
-	int updateValueByKey(@Param("paramKey") String paramKey, @Param("paramValue") String paramValue);
+	SysConfigEntity findByParamKey(String paramKey);
 	
 }

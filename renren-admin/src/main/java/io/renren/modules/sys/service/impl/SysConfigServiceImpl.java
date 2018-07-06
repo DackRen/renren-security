@@ -16,10 +16,8 @@
 
 package io.renren.modules.sys.service.impl;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.google.gson.Gson;
+import io.renren.common.specification.RSQLSpecification;
+import org.springframework.data.domain.Page;import io.renren.common.base.ServiceImpl;import com.google.gson.Gson;
 import io.renren.common.exception.RRException;
 import io.renren.common.utils.PageUtils;
 import io.renren.common.utils.Query;
@@ -36,41 +34,51 @@ import java.util.Arrays;
 import java.util.Map;
 
 @Service("sysConfigService")
-public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEntity> implements SysConfigService {
+public class SysConfigServiceImpl extends ServiceImpl<SysConfigEntity, Long> implements SysConfigService {
+	private final SysConfigRedis sysConfigRedis;
+	private final SysConfigDao repository;
+
 	@Autowired
-	private SysConfigRedis sysConfigRedis;
+	public SysConfigServiceImpl(SysConfigDao repository, SysConfigRedis sysConfigRedis) {
+		super(repository);
+		this.sysConfigRedis = sysConfigRedis;
+		this.repository = repository;
+	}
 
 	@Override
 	public PageUtils queryPage(Map<String, Object> params) {
 		String paramKey = (String)params.get("paramKey");
 
-		Page<SysConfigEntity> page = this.selectPage(
-				new Query<SysConfigEntity>(params).getPage(),
-				new EntityWrapper<SysConfigEntity>()
-					.like(StringUtils.isNotBlank(paramKey),"param_key", paramKey)
-					.eq("status", 1)
-		);
+		Page<SysConfigEntity> page = repository.findAll(
+				new RSQLSpecification<SysConfigEntity>("status", "eq", 1).and("paramKey", "like", paramKey),
+				new Query<SysConfigEntity>(params).getPage());
+//				new EntityWrapper<SysConfigEntity>()
+//					.like(StringUtils.isNotBlank(paramKey),"param_key", paramKey)
+//					.eq("status", 1)
 
 		return new PageUtils(page);
 	}
 	
 	@Override
-	public void save(SysConfigEntity config) {
-		this.insert(config);
+	public SysConfigEntity save(SysConfigEntity config) {
+		config = super.save(config);
 		sysConfigRedis.saveOrUpdate(config);
+		return config;
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public void update(SysConfigEntity config) {
-		this.updateAllColumnById(config);
+		super.save(config);
 		sysConfigRedis.saveOrUpdate(config);
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public void updateValueByKey(String key, String value) {
-		baseMapper.updateValueByKey(key, value);
+		SysConfigEntity sysConfigEntity = repository.findByParamKey(key);
+		sysConfigEntity.setParamValue(value);
+		repository.save(sysConfigEntity);
 		sysConfigRedis.delete(key);
 	}
 
@@ -78,18 +86,17 @@ public class SysConfigServiceImpl extends ServiceImpl<SysConfigDao, SysConfigEnt
 	@Transactional(rollbackFor = Exception.class)
 	public void deleteBatch(Long[] ids) {
 		for(Long id : ids){
-			SysConfigEntity config = this.selectById(id);
+			SysConfigEntity config = this.findById(id);
 			sysConfigRedis.delete(config.getParamKey());
 		}
-
-		this.deleteBatchIds(Arrays.asList(ids));
+		repository.deleteInBatch(repository.findAllById(Arrays.asList(ids)));
 	}
 
 	@Override
 	public String getValue(String key) {
 		SysConfigEntity config = sysConfigRedis.get(key);
 		if(config == null){
-			config = baseMapper.queryByKey(key);
+			config = repository.findByParamKey(key);
 			sysConfigRedis.saveOrUpdate(config);
 		}
 

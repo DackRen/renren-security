@@ -60,7 +60,7 @@ public class SysConfigController extends AbstractController {
 	@RequestMapping("/info/{id}")
 	@RequiresPermissions("sys:config:info")
 	public R info(@PathVariable("id") Long id){
-		SysConfigEntity config = sysConfigService.selectById(id);
+		SysConfigEntity config = sysConfigService.findById(id);
 		
 		return R.ok().put("config", config);
 	}
@@ -98,7 +98,7 @@ public class SysConfigController extends AbstractController {
 	 */
 	@SysLog("删除配置")
 	@RequestMapping("/delete")
-	@RequiresPermissions("sys:config:delete")
+	@RequiresPermissions("sys:config:deleteById")
 	public R delete(@RequestBody Long[] ids){
 		sysConfigService.deleteBatch(ids);
 		

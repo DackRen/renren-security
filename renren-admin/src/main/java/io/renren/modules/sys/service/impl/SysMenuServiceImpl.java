@@ -17,9 +17,9 @@
 package io.renren.modules.sys.service.impl;
 
 
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import io.renren.common.base.ServiceImpl;
+import io.renren.common.specification.RSQLSpecification;
 import io.renren.common.utils.Constant;
-import io.renren.common.utils.MapUtils;
 import io.renren.modules.sys.dao.SysMenuDao;
 import io.renren.modules.sys.entity.SysMenuEntity;
 import io.renren.modules.sys.service.SysMenuService;
@@ -33,11 +33,17 @@ import java.util.List;
 
 
 @Service("sysMenuService")
-public class SysMenuServiceImpl extends ServiceImpl<SysMenuDao, SysMenuEntity> implements SysMenuService {
+public class SysMenuServiceImpl extends ServiceImpl<SysMenuEntity, Long> implements SysMenuService {
+	private final SysUserService sysUserService;
+	private final SysRoleMenuService sysRoleMenuService;
+	private final SysMenuDao repository;
 	@Autowired
-	private SysUserService sysUserService;
-	@Autowired
-	private SysRoleMenuService sysRoleMenuService;
+	public SysMenuServiceImpl(SysMenuDao repository, SysUserService sysUserService, SysRoleMenuService sysRoleMenuService) {
+		super(repository);
+		this.repository = repository;
+		this.sysUserService = sysUserService;
+		this.sysRoleMenuService = sysRoleMenuService;
+	}
 	
 	@Override
 	public List<SysMenuEntity> queryListParentId(Long parentId, List<Long> menuIdList) {
@@ -57,12 +63,14 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuDao, SysMenuEntity> i
 
 	@Override
 	public List<SysMenuEntity> queryListParentId(Long parentId) {
-		return baseMapper.queryListParentId(parentId);
+		return repository.findAllByParentId(parentId);
 	}
-
+	/**
+	 * 获取不包含按钮的菜单列表
+	 */
 	@Override
 	public List<SysMenuEntity> queryNotButtonList() {
-		return baseMapper.queryNotButtonList();
+		return repository.findAll(new RSQLSpecification<SysMenuEntity>("type", "eq", "0").or("type", "eq", "1"));
 	}
 
 	@Override
@@ -78,11 +86,11 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuDao, SysMenuEntity> i
 	}
 
 	@Override
-	public void delete(Long menuId){
+	public void deleteById(Long menuId){
 		//删除菜单
 		this.deleteById(menuId);
 		//删除菜单与角色关联
-		sysRoleMenuService.deleteByMap(new MapUtils().put("menu_id", menuId));
+		sysRoleMenuService.deleteByMenuId(menuId);
 	}
 
 	/**

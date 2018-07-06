@@ -16,12 +16,11 @@
 
 package io.renren.modules.sys.entity;
 
-
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.renren.common.base.AbstractEntity;
+import lombok.Data;
 
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -35,14 +34,16 @@ import java.util.List;
  * @email sunlightcs@gmail.com
  * @date 2016年9月18日 上午9:27:38
  */
-@TableName("sys_role")
-public class SysRoleEntity implements Serializable {
+@Table(name = "sys_role")
+@Data@Entity
+public class SysRoleEntity extends AbstractEntity {
 	private static final long serialVersionUID = 1L;
 	
 	/**
 	 * 角色ID
 	 */
-	@TableId
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long roleId;
 
 	/**
@@ -65,12 +66,12 @@ public class SysRoleEntity implements Serializable {
 	/**
 	 * 部门名称
 	 */
-	@TableField(exist=false)
+	@Transient
 	private String deptName;
 
-	@TableField(exist=false)
+	@Transient
 	private List<Long> menuIdList;
-	@TableField(exist=false)
+	@Transient
 	private List<Long> deptIdList;
 	
 	/**
@@ -78,92 +79,4 @@ public class SysRoleEntity implements Serializable {
 	 */
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
 	private Date createTime;
-
-	/**
-	 * 设置：
-	 * @param roleId 
-	 */
-	public void setRoleId(Long roleId) {
-		this.roleId = roleId;
-	}
-
-	/**
-	 * 获取：
-	 * @return Long
-	 */
-	public Long getRoleId() {
-		return roleId;
-	}
-	
-	/**
-	 * 设置：角色名称
-	 * @param roleName 角色名称
-	 */
-	public void setRoleName(String roleName) {
-		this.roleName = roleName;
-	}
-
-	/**
-	 * 获取：角色名称
-	 * @return String
-	 */
-	public String getRoleName() {
-		return roleName;
-	}
-	
-	/**
-	 * 设置：备注
-	 * @param remark 备注
-	 */
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
-
-	/**
-	 * 获取：备注
-	 * @return String
-	 */
-	public String getRemark() {
-		return remark;
-	}
-
-	public Date getCreateTime() {
-		return createTime;
-	}
-
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
-
-	public List<Long> getMenuIdList() {
-		return menuIdList;
-	}
-
-	public void setMenuIdList(List<Long> menuIdList) {
-		this.menuIdList = menuIdList;
-	}
-
-	public Long getDeptId() {
-		return deptId;
-	}
-
-	public void setDeptId(Long deptId) {
-		this.deptId = deptId;
-	}
-
-	public String getDeptName() {
-		return deptName;
-	}
-
-	public void setDeptName(String deptName) {
-		this.deptName = deptName;
-	}
-
-	public List<Long> getDeptIdList() {
-		return deptIdList;
-	}
-
-	public void setDeptIdList(List<Long> deptIdList) {
-		this.deptIdList = deptIdList;
-	}
 }
